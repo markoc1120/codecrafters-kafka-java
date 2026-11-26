@@ -5,7 +5,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import kafka.protocol.RequestHeader;
-import kafka.protocol.ResponseHeader;
 
 public class Main {
   private static final int PORT = 9092;
@@ -20,8 +19,8 @@ public class Main {
   static void serve(ServerSocket serverSocket) throws IOException {
     try (Socket clientSocket = serverSocket.accept()) {
       Client client = new Client(clientSocket);
-      RequestHeader header = RequestHeader.parse(client.in);
-      new ResponseHeader(header.correlationId()).writeTo(client.out);
+      RequestHeader header = client.readRequest();
+      client.writeResponse(header);
     }
   }
 
